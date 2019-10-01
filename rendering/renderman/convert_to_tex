@@ -1,0 +1,39 @@
+import maya.cmds as cmds
+import os
+
+def convert_to_tex():
+    PxrTextures = cmds.ls(type=["PxrTexture","PxrNormalMap"])
+    #texpaths = [cmds.getAttr("{0}.filename".format(ptex)) for ptex in PxrTextures]
+    
+    already_msg = []
+    converted_tex = []
+    nota_path = []
+    for ptex in PxrTextures:
+        old_attr = cmds.getAttr("{0}.filename".format(ptex))
+        if old_attr.endswith(".tex"):
+            already_msg.append("{0} is already a tx".format(old_attr))
+        else:
+            newpath = "{0}.tex".format(old_attr)
+            if os.path.isfile(newpath):
+                cmds.setAttr("{0}.filename".format(ptex), newpath, type = "string")
+                converted_tex.append(newpath)
+            else:
+                nota_path.append("{0} is not a valid path please create tx".format(newpath))
+    
+    #print already_msg
+    if converted_tex:
+        print "#"*30
+        print "converted textures:"
+        print '\n'.join(map(str, converted_tex))
+    else:
+        print "#"*30
+        print "nothing to convert..."
+    if already_msg:
+        print "#"*30
+        print "textues which already are .tex:"
+        print '\n'.join(map(str, already_msg))
+    if nota_path:
+        print "#"*30
+        print "textures do not exist in tex please hit render or convert them....\nplease keep in mind that the name with extention has to be the same and should be located in the same folder:"
+        print '\n'.join(map(str, nota_path))
+convert_to_tex()
